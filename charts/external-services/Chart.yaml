@@ -1,0 +1,5 @@
+apiVersion: v2
+name: external-services
+description: A Helm chart for generating services, endpoints & ingresses for external services
+type: application
+version: 1.0.0

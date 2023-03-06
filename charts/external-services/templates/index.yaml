@@ -1,0 +1,57 @@
+{{- range $class,$svcs := .Values.classes }}
+{{- range $service := $svcs.services }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $service.name }}
+  namespace: {{ $svcs.namespace }}
+spec:
+  ports:
+{{- range $k,$p := .ports }}
+  - name: {{ $p.name | default (printf "%s-%d" "apps" $k) }}
+    port: {{ $p.port }}
+    protocol: {{ $p.protocol | default "TCP" }}
+    targetPort: {{ $p.port }}
+{{- end }}
+  clusterIP: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ $service.name }}
+  namespace: {{ $svcs.namespace }}
+subsets:
+- addresses:
+{{- $service.addresses | toYaml | nindent 2 }}
+  ports:
+{{- range $k,$p := .ports }}
+  - name: {{ $p.name | default (printf "%s-%d" "apps" $k) }}
+    port: {{ $p.port }}
+    protocol: {{ $p.protocol | default "TCP" }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ $service.name }}
+  namespace: {{ $svcs.namespace }}
+spec:
+  rules:
+  - host: {{ .host }}
+    http:
+      paths:
+{{- range $k,$p := .ports }}
+      - path: {{ $p.ingPath | default (ternary "/" (printf "%s-%d" "/p" $k) (eq $k 0)) }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $service.name }}
+            port:
+              number: {{ $p.port }}
+{{- end }}
+  ingressClassName: {{ $class }}
+---
+{{- end }}
+{{- end }}

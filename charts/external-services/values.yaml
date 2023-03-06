@@ -1,0 +1,19 @@
+classes:
+  # use as key the ingressClass of your ingress controller
+  # in my case i have two ingress extrnal & internal
+  external:
+    # the service, endpoint & ingress namespace
+    namespace: default
+    services:
+      # used as name for these 3 ressources
+      - name: an-external-service
+        # host of the ingress
+        host: myservice.mydomain.com
+        # passed to Endpoint see https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoints-v1/#Endpoints subsets.addresses
+        addresses:
+          - ip: 192.168.1.20 # accessible from kubernetes
+        ports:
+          - name: app # default to app-$index
+            port: 8123 # required
+            protocol: TCP # defaults to TCP
+            # ingPath: /test # defaults to / for the first port /p-$index for other
