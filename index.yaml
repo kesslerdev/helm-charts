@@ -1,5 +1,32 @@
 apiVersion: v1
 entries:
+  apitable:
+  - apiVersion: v2
+    created: "2023-03-12T11:04:02.70631494Z"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: ~17.8.3
+    - condition: rabbitmq.enabled
+      name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: ~11.10.3
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: ~12.1.10
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: ~9.6.0
+    description: A Helm chart for installing APITable and all of these dependencies
+    digest: 16106600aa17376f44e11bb72a3b955f2a629fabc3e9f4cb79791e7904d3e8ac
+    name: apitable
+    type: application
+    urls:
+    - https://github.com/kesslerdev/helm-charts/releases/download/apitable-0.1.0/apitable-0.1.0.tgz
+    version: 0.1.0
   external-services:
   - apiVersion: v2
     created: "2023-03-06T21:09:24.684017678Z"
@@ -11,4 +38,4 @@ entries:
     urls:
     - https://github.com/kesslerdev/helm-charts/releases/download/external-services-1.0.0/external-services-1.0.0.tgz
     version: 1.0.0
-generated: "2023-03-06T21:09:24.684022578Z"
+generated: "2023-03-12T11:04:02.70632844Z"
