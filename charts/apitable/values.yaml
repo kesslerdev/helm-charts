@@ -1,0 +1,387 @@
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+waitForDB:
+  image:
+    # Overrides the image tag whose default is the mysql subchart image repo.
+    repository:
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the mysql subchart tag.
+    tag:
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+initDB:
+  image:
+    repository: apitable/init-db
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_1063"
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+initAppData:
+  image:
+    repository: apitable/init-appdata
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_build51"
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+imageProxy:
+  replicaCount: 1
+  image:
+    repository: apitable/imageproxy-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.13.4-alpha_build9"
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 8080
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+webServer:
+  replicaCount: 1
+  image:
+    repository: apitable/web-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_1063"
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 8080
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+backendServer:
+  replicaCount: 1
+  image:
+    repository: apitable/backend-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_1063"
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 8081
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+roomServer:
+  replicaCount: 1
+  image:
+    repository: apitable/room-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_1063"
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    type: ClusterIP
+    ports: 
+      http: 3333
+      nestGrpc: 3334
+      unknown1: 3001
+      socketUrl: 3002
+      unknown2: 3006
+      socketRoom: 3005
+      socketGrpc: 3007
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+gateway:
+  replicaCount: 1
+  image:
+    repository: apitable/openresty
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.18.0-alpha_1063"
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 80
+  # podAnnotations: {}
+  # podSecurityContext: {}
+  #   fsGroup: 2000
+  # securityContext: {}
+  #   capabilities:
+  #     drop:
+  #     - ALL
+  #   readOnlyRootFilesystem: true
+  #   runAsNonRoot: true
+  #   runAsUser: 1000
+  # nodeSelector: {}
+  # tolerations: []
+  # affinity: {}
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+database:
+  tablePrefix: apitable_
+## Subcharts
+
+## See https://artifacthub.io/packages/helm/bitnami/redis#parameters
+redis:
+  enabled: true
+  auth:
+    password: apitable@com # Please change it
+
+## See https://artifacthub.io/packages/helm/bitnami/rabbitmq#parameters
+rabbitmq:
+  enabled: true
+  auth:
+    username: apitable # Please change it
+    password: apitable@com # Please change it
+    erlangCookie: apitable@erlangcookie # Please change it
+
+## See https://artifacthub.io/packages/helm/bitnami/minio#parameters
+minio:
+  enabled: true
+  auth:
+    rootUser: apitable # ACCESS_KEY Please change it
+    rootPassword: apitable@com # SECRET_KEY Please change it
+
+## See https://artifacthub.io/packages/helm/bitnami/mysql#parameters
+mysql:
+  enabled: true
+  auth:
+    database: apitable
+    rootPassword: apitable@com # Please change it
+    username: apitable # Please change it
+    password: apitable@com # Please change it
+  primary:
+    configuration: |-
+      [mysqld]
+      default_authentication_plugin=mysql_native_password
+      skip-name-resolve
+      explicit_defaults_for_timestamp
+      basedir=/opt/bitnami/mysql
+      plugin_dir=/opt/bitnami/mysql/lib/plugin
+      port=3306
+      socket=/opt/bitnami/mysql/tmp/mysql.sock
+      datadir=/bitnami/mysql/data
+      tmpdir=/opt/bitnami/mysql/tmp
+      max_allowed_packet=16M
+      bind-address=*
+      pid-file=/opt/bitnami/mysql/tmp/mysqld.pid
+      log-error=/opt/bitnami/mysql/logs/mysqld.log
+      character-set-server=utf8mb4
+      collation-server=utf8mb4_general_ci
+      slow_query_log=0
+      slow_query_log_file=/opt/bitnami/mysql/logs/mysqld.log
+      long_query_time=10.0
+      lower_case_table_names=2
+      sql_mode=IGNORE_SPACE,NO_ENGINE_SUBSTITUTION
+
+      [client]
+      port=3306
+      socket=/opt/bitnami/mysql/tmp/mysql.sock
+      default-character-set=UTF8
+      plugin_dir=/opt/bitnami/mysql/lib/plugin
+
+      [manager]
+      port=3306
+      socket=/opt/bitnami/mysql/tmp/mysql.sock
+      pid-file=/opt/bitnami/mysql/tmp/mysqld.pid

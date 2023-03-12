@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "apitable.fullname" . }}-init-appdata"
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "apitable.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "apitable.serviceAccountName" . }}
+      securityContext:
+        {{- .Values.initAppData.podSecurityContext | default .Values.podSecurityContext | toYaml | nindent 8 }}
+      containers:
+      - name: init-appdata
+        image: "{{ .Values.initAppData.image.repository }}:{{ .Values.initAppData.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.initAppData.image.pullPolicy }}
+        securityContext:
+          {{- .Values.initAppData.securityContext | default .Values.securityContext | toYaml | nindent 10 }}
+        envFrom:
+          - configMapRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+          - secretRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "apitable.fullname" . }}-room-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.roomServer.autoscaling.enabled }}
+  replicas: {{ .Values.roomServer.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "apitable.selectorLabels" . | nindent 6 }}
+      apitable.com/component: room-server
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "apitable.selectorLabels" . | nindent 8 }}
+        apitable.com/component: room-server
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "apitable.serviceAccountName" . }}
+      securityContext:
+        {{- .Values.roomServer.podSecurityContext | default .Values.podSecurityContext | toYaml | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- .Values.roomServer.securityContext | default .Values.securityContext | toYaml | nindent 12 }}
+          image: "{{ .Values.roomServer.image.repository }}:{{ .Values.roomServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.roomServer.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: "{{ include "apitable.fullname" . }}-envs"
+            - secretRef:
+                name: "{{ include "apitable.fullname" . }}-envs"
+          env:
+          - name: NODE_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ include "apitable.fullname" . }}-envs"
+                key: ENV
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=2048 --max-http-header-size=80000"
+          - name: API_MAX_MODIFY_RECORD_COUNTS
+            value: "30"
+          - name: INSTANCE_MAX_MEMORY
+            value: "4096M"
+          - name: ENABLE_SOCKET
+            value: "true"
+          - name: ROOM_GRPC_URL
+            value: "0.0.0.0:{{.Values.roomServer.service.ports.nestGrpc}}"
+          - name: SOCKET_GRPC_URL
+            value: "0.0.0.0:{{.Values.roomServer.service.ports.socketGrpc}}"
+          ports:
+          {{- range $k,$p :=  .Values.roomServer.service.ports }}
+            - name: {{ kebabcase $k }}
+              containerPort: {{ $p }}
+              protocol: TCP
+          {{- end }}
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.roomServer.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "apitable.fullname" . }}-room-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.roomServer.service.type }}
+  ports:
+    {{- range $k,$p :=  .Values.roomServer.service.ports }}
+    - port: {{ $p }}
+      targetPort: {{ kebabcase $k }}
+      protocol: TCP
+      name: {{ kebabcase $k }}
+    {{- end }}
+  selector:
+    {{- include "apitable.selectorLabels" . | nindent 4 }}
+    apitable.com/component: room-server
+---
+{{- if .Values.roomServer.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "apitable.fullname" . }}-room-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "apitable.fullname" . }}-room-server
+  minReplicas: {{ .Values.roomServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.roomServer.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.roomServer.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.roomServer.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.roomServer.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.roomServer.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

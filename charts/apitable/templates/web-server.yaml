@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "apitable.fullname" . }}-web-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.webServer.autoscaling.enabled }}
+  replicas: {{ .Values.webServer.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "apitable.selectorLabels" . | nindent 6 }}
+      apitable.com/component: web-server
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "apitable.selectorLabels" . | nindent 8 }}
+        apitable.com/component: web-server
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "apitable.serviceAccountName" . }}
+      securityContext:
+        {{- .Values.webServer.podSecurityContext | default .Values.podSecurityContext | toYaml | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- .Values.webServer.securityContext | default .Values.securityContext | toYaml | nindent 12 }}
+          image: "{{ .Values.webServer.image.repository }}:{{ .Values.webServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.webServer.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: "{{ include "apitable.fullname" . }}-envs"
+            - secretRef:
+                name: "{{ include "apitable.fullname" . }}-envs"
+          ports:
+            - name: http
+              containerPort: {{ .Values.webServer.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.webServer.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "apitable.fullname" . }}-web-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.webServer.service.type }}
+  ports:
+    - port: {{ .Values.webServer.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "apitable.selectorLabels" . | nindent 4 }}
+    apitable.com/component: web-server
+---
+{{- if .Values.webServer.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "apitable.fullname" . }}-web-server
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "apitable.fullname" . }}-backend-server
+  minReplicas: {{ .Values.webServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.webServer.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.webServer.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.webServer.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.webServer.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.webServer.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

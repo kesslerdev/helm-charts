@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "apitable.fullname" . }}-envs"
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+data:
+  DATABASE_TABLE_PREFIX: "{{ .Values.database.tablePrefix }}"
+  MYSQL_DATABASE: "{{ .Values.mysql.auth.database }}"
+  MYSQL_HOST: "{{ .Release.Name }}-mysql"
+  MYSQL_PORT: "{{ .Values.mysql.primary.service.ports.mysql }}"
+  MYSQL_USERNAME: "{{ .Values.mysql.auth.username }}"
+  REDIS_DB: "0"
+  REDIS_HOST: "{{ .Release.Name }}-redis-master"
+  REDIS_PORT: "{{ .Values.redis.master.containerPorts.redis }}"
+  RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
+  RABBITMQ_PORT: "{{ .Values.rabbitmq.containerPorts.amqp }}"
+  RABBITMQ_USERNAME: "{{ .Values.rabbitmq.auth.username }}"
+  RABBITMQ_VHOST: "/"
+  MINIO_ACCESS_KEY: "{{ .Values.minio.auth.rootUser }}"
+  AWS_ACCESS_KEY: "{{ .Values.minio.auth.rootUser }}"
+  AWS_ENDPOINT: http://{{ .Release.Name }}-minio:9000
+  AWS_REGION: us-east-1
+  OSS_CACHE_TYPE: minio
+  OSS_HOST: assets
+  OSS_TYPE: QNY1
+  OSS_CLIENT_TYPE: aws
+  OSS_ENABLED: "true"
+  OSS_BUCKET_NAME: assets
+  VK_ASSETS_LTD_BUCKET: assets
+  VK_ASSETS_LTD_URL: assets
+  DATA_PATH: "."
+  ENV: apitable
+  API_PROXY: "http://{{ include "apitable.fullname" . }}-backend-server:{{ .Values.backendServer.service.port }}"
+  BACKEND_INFO_URL: "http://{{ include "apitable.fullname" . }}-backend-server:{{ .Values.backendServer.service.port }}/api/v1/client/info"
+  PUBLIC_URL: ""
+  TEMPLATE_PATH: "./static/web_build/index.html"
+  USE_CUSTOM_PUBLIC_FILES: "true"
+  BACKEND_BASE_URL: "http://{{ include "apitable.fullname" . }}-backend-server:{{ .Values.backendServer.service.port }}/api/v1/"
+  NEST_GRPC_URL: "{{ include "apitable.fullname" . }}-room-server:{{ .Values.roomServer.service.ports.nestGrpc }}"
+  SOCKET_GRPC_URL: "{{ include "apitable.fullname" . }}-room-server:{{ .Values.roomServer.service.ports.socketGrpc }}"
+  NEST_GRPC_ADDRESS: "static://{{ include "apitable.fullname" . }}-room-server:{{ .Values.roomServer.service.ports.nestGrpc }}"
+  CALLBACK_DOMAIN: ""
+  CORS_ORIGINS: "*"
+  SERVER_DOMAIN: ""
+  SOCKET_DOMAIN: "http://{{ include "apitable.fullname" . }}-room-server:{{ .Values.roomServer.service.ports.http }}/socket"
+  SKIP_REGISTER_VALIDATE: "true"
+  TEMPLATE_SPACE: "spcNTxlv8Drra"
+  SOCKET_RECONNECTION_ATTEMPTS: "10"
+  SOCKET_RECONNECTION_DELAY: "500"
+  SOCKET_TIMEOUT: "5000"
+  SOCKET_URL: "http://{{ include "apitable.fullname" . }}-room-server:{{ .Values.roomServer.service.ports.socketUrl }}"
+  SMS_ENABLED: "false"
+  MAIL_ENABLED: "false"
+  MAIL_HOST: ""
+  MAIL_PORT: ""
+  MAIL_SSL_ENABLE: "true"
+  MAIL_TYPE: "smtp"
+  MAIL_USERNAME: ""

@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "apitable.fullname" . }}-wait-for-db"
+  labels:
+    {{- include "apitable.labels" . | nindent 4 }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "apitable.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "apitable.serviceAccountName" . }}
+      securityContext:
+        {{- .Values.waitForDB.podSecurityContext | default .Values.podSecurityContext | toYaml | nindent 8 }}
+      containers:
+      - name: wait-for-db
+        image: "{{ .Values.waitForDB.image.repository | default .Values.mysql.image.repository }}:{{ .Values.waitForDB.image.tag | default .Values.mysql.image.tag }}"
+        imagePullPolicy: {{ .Values.waitForDB.image.pullPolicy }}
+        securityContext:
+          {{- .Values.waitForDB.securityContext | default .Values.securityContext | toYaml | nindent 10 }}
+        command:
+          - "/bin/sh"
+          - "-c"
+          - "until mysql --host=${DB_HOST} --port=${DB_PORT} --user=${DB_USERNAME}
+          --password=${DB_PASSWORD} --execute=\"SELECT 1;\"; do echo waiting for mysql; sleep 2; done;"
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+              key: MYSQL_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+              key: MYSQL_PORT
+        - name: DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+              key: MYSQL_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ include "apitable.fullname" . }}-envs"
+              key: MYSQL_PASSWORD
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
