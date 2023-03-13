@@ -6,7 +6,8 @@ metadata:
     {{- include "directus.labels" . | nindent 4 }}
 spec:
   # Remove when using external storage
-  strategy: Recreate
+  strategy: 
+    type: Recreate
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
