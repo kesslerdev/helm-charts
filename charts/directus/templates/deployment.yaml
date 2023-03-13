@@ -39,7 +39,7 @@ spec:
             - name: DB_HOST
               value: {{ include "directus.fullname" . }}-pg
             - name: DB_PORT
-              value: 5432
+              value: "5432"
             - name: DB_DATABASE
               value: {{ .Values.database.database }}
             - name: DB_USER
