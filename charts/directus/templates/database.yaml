@@ -6,6 +6,11 @@ metadata:
   name: {{ include "directus.fullname" . }}-pg
 
 spec:
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          - "hostnossl all all all md5"
   teamId: {{ .Values.database.PGZalando.teamId }}
   postgresql:
     version: "15"
