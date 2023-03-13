@@ -33,6 +33,25 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_CLIENT
+              value: postgres
+            - name: DB_HOST
+              value: {{ include "apitable.fullname" . }}-pg
+            - name: DB_PORT
+              value: 5432
+            - name: DB_DATABASE
+              value: {{ .Values.database.database }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.database.user }}.{{ include "apitable.fullname" . }}-pg.credentials.postgresql.acid.zalan.do"
+                  key: password
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.database.user }}.{{ include "apitable.fullname" . }}-pg.credentials.postgresql.acid.zalan.do"
+                  key: password
           envFrom:
             - configMapRef:
                 name: "{{ include "directus.fullname" . }}-envs"
