@@ -20,6 +20,8 @@ spec:
       labels:
         {{- include "directus.selectorLabels" . | nindent 8 }}
     spec:
+      # Remove when using external storage
+      strategy: Recreate
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
