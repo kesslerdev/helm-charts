@@ -11,3 +11,4 @@ data:
   {{- $projectKey := (get $cmData "KEY") |  default .Values.directus.key | default uuidv4 }}
   KEY: "{{ $projectKey }}"
   ADMIN_EMAIL: "{{ .Values.directus.admin.email }}"
+  PUBLIC_URL: "{{ ternary (print "https://" (first .Values.ingress.hosts).host "/") "/" .Values.ingress.enabled }}"
