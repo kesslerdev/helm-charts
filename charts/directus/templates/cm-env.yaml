@@ -8,6 +8,6 @@ data:
 # retrieve the secret data using lookup function and when not exists, return an empty dictionary / map as result
   {{- $cmObj := (lookup "v1" "ConfigMap" .Release.Namespace (print (include "directus.fullname" .) "-envs")) | default dict }}
   {{- $cmData := (get $cmObj "data") | default dict }}
-  {{- $projectKey := (get $cmData "KEY") |  default .Values.directus.key | default (randAlphaNum 32) }}
+  {{- $projectKey := (get $cmData "KEY") |  default .Values.directus.key | default uuidv4 }}
   KEY: "{{ $projectKey }}"
   ADMIN_EMAIL: "{{ .Values.directus.admin.email }}"

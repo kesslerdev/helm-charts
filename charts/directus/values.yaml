@@ -46,7 +46,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8085
+  port: 8055
 
 ingress:
   enabled: false
