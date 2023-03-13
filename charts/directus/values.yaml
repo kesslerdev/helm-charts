@@ -8,6 +8,7 @@ directus:
 database:
   PGZalando:
     enable: false
+    teamId: acid
   storageSize: 8Gi
   user: directus
   database: directus

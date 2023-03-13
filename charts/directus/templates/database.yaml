@@ -1,3 +1,4 @@
+{{- if .Values.database.PGZalando.enabled }}
 kind: "postgresql"
 apiVersion: "acid.zalan.do/v1"
 
@@ -5,6 +6,7 @@ metadata:
   name: {{ include "directus.fullname" . }}
 
 spec:
+  teamId: {{ .Values.database.PGZalando.teamId }}
   postgresql:
     version: "15"
   numberOfInstances: 1
@@ -14,3 +16,4 @@ spec:
     {{ .Values.database.user }}: []
   databases:
     {{ .Values.database.database }}: {{ .Values.database.user }}
+{{- end }}
