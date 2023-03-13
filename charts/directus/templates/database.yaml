@@ -29,4 +29,11 @@ spec:
     {{ .Values.database.user }}: []
   databases:
     {{ .Values.database.database }}: {{ .Values.database.user }}
+  preparedDatabases:
+    {{ .Values.database.database }}:
+      defaultUsers: true
+      extensions:
+        postgis: geo
+      schemas:
+        geo: {}
 {{- end }}
