@@ -88,3 +88,33 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+
+## Enable persistence using Persistent Volume Claims
+## ref: https://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  ## @param persistence.enabled Enable uploads persistence using PVC. If false, use emptyDir
+  ##
+  enabled: false
+  ## @param persistence.storageClass PVC Storage Class for uploads volume
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: ""
+  ## @param persistence.mountPath Data volume mount path
+  ##
+  mountPath: /uploads
+  ## @param persistence.accessModes PVC Access Modes for uploads volume
+  ##
+  accessModes:
+    - ReadWriteOnce
+  ## @param persistence.size PVC Storage Request for uploads volume
+  ##
+  size: 8Gi
+  ## @param persistence.annotations Annotations for the PVC
+  ##
+  annotations: {}
