@@ -5,6 +5,13 @@ directus:
     email: admin@example.com
     password: 
 
+database:
+  PGZalando:
+    enable: false
+  storageSize: 8Gi
+  user: directus
+  database: directus
+
 
 # Default values for directus.
 # This is a YAML-formatted file.
