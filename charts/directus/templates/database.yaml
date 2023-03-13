@@ -3,7 +3,7 @@ kind: "postgresql"
 apiVersion: "acid.zalan.do/v1"
 
 metadata:
-  name: {{ include "directus.fullname" . }}
+  name: {{ include "directus.fullname" . }}-pg
 
 spec:
   teamId: {{ .Values.database.PGZalando.teamId }}
