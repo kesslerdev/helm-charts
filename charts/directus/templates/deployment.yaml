@@ -43,6 +43,8 @@ spec:
               value: {{ include "directus.fullname" . }}-pg
             - name: DB_PORT
               value: "5432"
+             - name: DB_SSL
+              value: "true"
             - name: DB_DATABASE
               value: {{ .Values.database.database }}
             - name: DB_USER
