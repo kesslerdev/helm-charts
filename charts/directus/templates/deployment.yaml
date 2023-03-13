@@ -5,6 +5,8 @@ metadata:
   labels:
     {{- include "directus.labels" . | nindent 4 }}
 spec:
+  # Remove when using external storage
+  strategy: Recreate
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -20,8 +22,6 @@ spec:
       labels:
         {{- include "directus.selectorLabels" . | nindent 8 }}
     spec:
-      # Remove when using external storage
-      strategy: Recreate
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
