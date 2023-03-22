@@ -30,6 +30,16 @@ entries:
   directus:
   - apiVersion: v2
     appVersion: main
+    created: "2023-03-22T13:38:55.67223259Z"
+    description: A Helm chart for Kubernetes
+    digest: c49628d8c81ea9f42b6ba0786c4ded9d672cb4d0dcc627f6050c4f20952ddeca
+    name: directus
+    type: application
+    urls:
+    - https://github.com/kesslerdev/helm-charts/releases/download/directus-0.0.29/directus-0.0.29.tgz
+    version: 0.0.29
+  - apiVersion: v2
+    appVersion: main
     created: "2023-03-13T20:45:11.08729794Z"
     description: A Helm chart for Kubernetes
     digest: 2c0d472aa2b38d5273c090e0f4bcc0b222b4cf4d80882c079de43523c33caf65
@@ -318,4 +328,4 @@ entries:
     urls:
     - https://github.com/kesslerdev/helm-charts/releases/download/external-services-1.0.0/external-services-1.0.0.tgz
     version: 1.0.0
-generated: "2023-03-13T20:45:11.087507947Z"
+generated: "2023-03-22T13:38:55.672435588Z"
