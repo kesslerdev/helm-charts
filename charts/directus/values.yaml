@@ -41,8 +41,8 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
 
 securityContext: {}
   # capabilities:
@@ -115,7 +115,7 @@ persistence:
   storageClass: ""
   ## @param persistence.mountPath Data volume mount path
   ##
-  mountPath: /uploads
+  mountPath: /directus/uploads
   ## @param persistence.accessModes PVC Access Modes for uploads volume
   ##
   accessModes:
